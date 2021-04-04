@@ -1,8 +1,6 @@
 const express = require('express');
 const app = express();
 const multer = require('multer')
-const port = process.env.PORT || 80;
-
 
 app.use(express.static(__dirname + 'upload'))
 app.set('view engine', 'ejs');
@@ -41,6 +39,7 @@ app.post('/', upload.single('image'), (req, res) => {
 
 app.post('/compress/:name/:quality', (req, res) => {
     const img_compress_name = req.params.name
+    let img_down_path = __dirname + '/output/'+ img_compress_name
     let img_quality = req.params.quality
     const imagemin = require('imagemin');
     const imageminMozjpeg = require('imagemin-mozjpeg');
@@ -53,9 +52,8 @@ app.post('/compress/:name/:quality', (req, res) => {
                 plugins: [imageminMozjpeg({ quality: img_quality })]
             }
         );
-	let file_path = __dirname + '/output/' + img_compress_name
-        res.sendFile(__dirname + '/output/' + img_compress_name)
-
+        
+        res.download(files[0].destinationPath)
     })();
 
 
@@ -66,6 +64,6 @@ app.post('/compress/:name/:quality', (req, res) => {
 
 
 
-app.listen(port, () => {
+app.listen(80, () => {
     console.log("Server Started")
 })
